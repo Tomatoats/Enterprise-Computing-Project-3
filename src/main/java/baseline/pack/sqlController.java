@@ -115,6 +115,7 @@ public class sqlController {
         ChoiceDBURL.setItems(DBURL);
         ChoiceUser.setValue("");
         ChoiceUser.setItems(users);
+        DisplayBikes.Setup();
 
     }
 
