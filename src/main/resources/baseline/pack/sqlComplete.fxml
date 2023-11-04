@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="489.0" prefWidth="712.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="baseline.pack.sqlController">
+   <children>
+      <GridPane layoutX="7.0" prefHeight="218.0" prefWidth="333.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="162.0" minWidth="10.0" prefWidth="141.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="213.0" minWidth="10.0" prefWidth="192.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label prefHeight="24.0" prefWidth="141.0" text="Connection Details" textFill="#2181da">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+            </Label>
+            <ChoiceBox fx:id="ChoiceDBURL" prefHeight="26.0" prefWidth="211.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <ChoiceBox fx:id="ChoiceUser" prefHeight="26.0" prefWidth="202.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextField fx:id="fieldUsername" prefHeight="25.0" prefWidth="160.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <TextField fx:id="fieldPassword" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label alignment="CENTER" prefHeight="53.0" prefWidth="141.0" text="DB URL Properties" GridPane.rowIndex="1" />
+            <Label alignment="CENTER" prefHeight="48.0" prefWidth="141.0" text="User Properties" GridPane.rowIndex="2" />
+            <Label alignment="CENTER" prefHeight="45.0" prefWidth="141.0" text="Username" GridPane.rowIndex="3" />
+            <Label alignment="CENTER" prefHeight="47.0" prefWidth="141.0" text="Password" GridPane.rowIndex="4" />
+            <Button fx:id="ButtonConnect" mnemonicParsing="false" onAction="#ButtonConnectPressed" prefHeight="25.0" prefWidth="173.0" text="Connect to Database" GridPane.rowIndex="5" />
+         </children>
+      </GridPane>
+      <VBox layoutX="356.0" layoutY="2.0" prefHeight="170.0" prefWidth="343.0">
+         <children>
+            <Label prefHeight="27.0" prefWidth="210.0" text="Enter an SQL Function">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <TextArea fx:id="AreaEnterSQL" prefHeight="135.0" prefWidth="313.0" />
+         </children>
+      </VBox>
+      <HBox layoutX="353.0" layoutY="186.0" prefHeight="30.0" prefWidth="357.0">
+         <children>
+            <Button fx:id="ButtonClearSQL" mnemonicParsing="false" onAction="#ButtonClearSQLPressed" prefHeight="25.0" prefWidth="135.0" text="Clear SQL Command">
+               <HBox.margin>
+                  <Insets left="25.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="ButtonExecute" mnemonicParsing="false" onAction="#ButtonExecutePressed" text="Execute SQL Command">
+               <HBox.margin>
+                  <Insets left="30.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+      <HBox layoutX="7.0" layoutY="220.0" prefHeight="30.0" prefWidth="705.0">
+         <children>
+            <Label fx:id="labelConnected" prefHeight="37.0" prefWidth="705.0" text="Label" />
+         </children>
+      </HBox>
+      <VBox layoutX="7.0" layoutY="255.0" prefHeight="228.0" prefWidth="699.0">
+         <children>
+            <Label prefHeight="31.0" prefWidth="473.0" text="SQL Execution Window" textFill="#1496a4">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <TextArea fx:id="AreaResults" editable="false" prefHeight="164.0" prefWidth="699.0" />
+            <Button fx:id="ButtonClearResult" mnemonicParsing="false" onAction="#ButtonClearResultPressed" prefHeight="30.0" prefWidth="169.0" text="Clear Result Window">
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin>
+            </Button>
+         </children>
+      </VBox>
+   </children>
+</Pane>
