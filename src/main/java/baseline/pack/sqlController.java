@@ -9,9 +9,17 @@ import javafx.scene.control.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 
 public class sqlController {
+    public boolean connected;
+
+    private ObservableList<ObservableList> data;
+
     ObservableList<String> DBURL =  FXCollections.observableArrayList("project3.properties", "bikedb.properties");
     ObservableList<String> users = FXCollections.observableArrayList("root.properties","client1.properties","client2.properties");
 
@@ -47,6 +55,8 @@ public class sqlController {
 
     @FXML
     public Label labelConnected;
+    @FXML
+    private TableView<ObservableList> TableResults;
 
     public static void Setup(){
         //String temp1[] ={ "project3.properties", "bikedb.properties"} ;
@@ -64,9 +74,11 @@ public class sqlController {
         if (Regex(user,pass)){
             String connect = URLGet("in//"+ChoiceDBURL.getValue());
             labelConnected.setText("CONNECTED TO: " + connect);
+            connected = true;
         }
         else{
             //labelConnected.setText("Invalid user / pass combo");
+            connected = false;
         }
     }
 
@@ -84,6 +96,65 @@ public class sqlController {
     void ButtonExecutePressed(ActionEvent event) {
         //todo: take this and make the sql command
         //IF: Connected - COntinue on and make sure the sql command is correct
+        if (connected){
+            String command =  AreaEnterSQL.getText();
+            data = FXCollections.observableArrayList();
+            try {
+
+                MysqlDataSource dataSource = null;
+                dataSource = connect();
+
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(command);
+                //ResultSetMetaData metaData = resultSet.getMetaData();
+                for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
+                    //We are using non property style for making dynamic table
+                    final int j = i;
+                    TableColumn col = new TableColumn();
+                    col.setText(resultSet.getMetaData().getColumnName(i+1));
+
+                    //col.setCellValueFactory(new Callback<CellDataFeatures<ObservableList, String>, ObservableValue<String>>() {
+                        //public ObservableValue<String> call(TableColumn.CellDataFeatures<ObservableList, String> param) {
+                            //return new SimpleStringProperty(param.getValue().get(j).toString());
+                        //}
+                    //});
+                    //TableResults.getColumns().addAll(col);
+                    System.out.println("Column [" + i + "] ");
+                }
+
+                while (resultSet.next()) {
+                    //Iterate Row
+                    ObservableList<String> row = FXCollections.observableArrayList();
+                    for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+                        //Iterate Column
+                        row.add(resultSet.getString(i));
+                    }
+                    System.out.println("Row [1] added " + row);
+                    data.add(row);
+
+
+                }
+                for (int i = 0; i < data.size();i++){
+                    System.out.println(data.get(i));
+                }
+                //TableResults.setItems(data);
+                //int numberOfColumns = metaData.getColumnCount();
+                //TableResults.colum
+
+                statement.close();
+                connection.close();
+            }
+            catch ( SQLException sqlException )
+            {
+                AreaResults.setText("Error: Unfamiliar command or Privlige not given");
+                sqlException.printStackTrace();
+                System.exit( 1 );
+            } // end catch
+        }
+        else {
+            labelConnected.setText("You have to connect before executing commands");
+        }
                 //for each command make sure they have the proper permissions
 
         //Else: say that they gotta be connected first
@@ -198,6 +269,29 @@ public class sqlController {
         }
 
         return toRet;
+    }
+    @FXML
+    public MysqlDataSource connect(){
+        Properties properties = new Properties();
+        FileInputStream filein = null;
+        MysqlDataSource dataSource = null;
+        FileInputStream fileuser = null;
+        try {
+            filein = new FileInputStream("in//"+ ChoiceDBURL.getValue());
+            properties.load(filein);
+            dataSource = new MysqlDataSource();
+
+            dataSource.setURL(properties.getProperty("MYSQL_DB_URL"));
+            fileuser = new FileInputStream("in//"+ChoiceUser.getValue());
+            properties.load(fileuser);
+            dataSource.setUser(properties.getProperty("MYSQL_DB_USERNAME"));
+            dataSource.setPassword(properties.getProperty("MYSQL_DB_PASSWORD"));
+            return dataSource;
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return  dataSource;
     }
 
 }
