@@ -1,14 +1,15 @@
 package baseline.pack;
 
+import com.mysql.cj.jdbc.MysqlDataSource;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 public class sqlController {
     ObservableList<String> DBURL =  FXCollections.observableArrayList("project3.properties", "bikedb.properties");
@@ -48,8 +49,8 @@ public class sqlController {
     public Label labelConnected;
 
     public static void Setup(){
-        String temp1[] ={ "project3.properties", "bikedb.properties"} ;
-        String temp2[] ={ "root.properties","client1.properties","client2.properties"};
+        //String temp1[] ={ "project3.properties", "bikedb.properties"} ;
+        //String temp2[] ={ "root.properties","client1.properties","client2.properties"};
         //ChoiceDBURL = new ChoiceBox<>(FXCollections.observableArrayList( temp1));
         //ChoiceBox ChoiceUser = new ChoiceBox<>(FXCollections.observableArrayList( temp2));
         //ChoiceUser.setItems(FXCollections.observableArrayList(temp2).sorted());
@@ -61,12 +62,11 @@ public class sqlController {
         String user = fieldUsername.getText();
         String pass = fieldPassword.getText();
         if (Regex(user,pass)){
-            //todo, connect!
-            labelConnected.setText("Connected!");
+            String connect = URLGet("in//"+ChoiceDBURL.getValue());
+            labelConnected.setText("CONNECTED TO: " + connect);
         }
         else{
-            //Todo,don't connect
-            labelConnected.setText("Invalid user / pass combo");
+            //labelConnected.setText("Invalid user / pass combo");
         }
     }
 
@@ -89,22 +89,27 @@ public class sqlController {
         //Else: say that they gotta be connected first
         String command =  AreaEnterSQL.getText();
     }
-
+    @FXML
     boolean Regex(String user, String pass){
+        if (ChoiceDBURL.getValue().equals("")){
+            labelConnected.setText("Please choose which Database Property to use");
+            return false;
+        }
+        if (ChoiceUser.getValue().equals("")){
+            labelConnected.setText("Please choose which User Property to use");
+            return false;
+        }
+        String actualUser = UserGet("in//" +  ChoiceUser.getValue());
+        String actualPass = PassGet("in//" + ChoiceUser.getValue());
         boolean flag = false;
-        String list[] = {"root","client1","client2"};
-        if (user.equals(list[0]) && pass.equals(list[0])){
-            flag = true;
-        }
-        else if (user.equals(list[1]) && pass.equals(list[1])){
-            flag = true;
-        }
-
-        else if (user.equals(list[2]) && pass.equals(list[2])){
+        //String list[] = {"root","client1","client2"};
+        if (user.equals(actualUser) && pass.equals(actualPass)){
             flag = true;
         }
         else {
             flag = false;
+            labelConnected.setText("Invalid user / pass combo");
+
         }
         return flag;
 
@@ -117,6 +122,82 @@ public class sqlController {
         ChoiceUser.setItems(users);
         DisplayBikes.Setup();
 
+    }
+
+    private String UserGet(String file){
+        String toRet = "";
+        //System.out.printf(file);
+        Properties properties = new Properties();
+        FileInputStream filein = null;
+        MysqlDataSource dataSource = null;
+        FileInputStream fileuser = null;
+
+        try {
+            filein = new FileInputStream(file);
+            properties.load(filein);
+            dataSource = new MysqlDataSource();
+            dataSource.setUser(properties.getProperty("MYSQL_DB_USERNAME"));
+            //dataSource.setPassword(properties.getProperty("MYSQL_DB_PASSWORD"));
+            toRet = dataSource.getUser();
+            //System.out.println(toRet);
+            return toRet;
+        }
+        // end catch
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return toRet;
+    }
+    private String PassGet(String file){
+        String toRet = "";
+        Properties properties = new Properties();
+        FileInputStream filein = null;
+        MysqlDataSource dataSource = null;
+        FileInputStream fileuser = null;
+
+        try {
+            filein = new FileInputStream(file);
+            properties.load(filein);
+            dataSource = new MysqlDataSource();
+           // dataSource.setUser(properties.getProperty("MYSQL_DB_USERNAME"));
+            dataSource.setPassword(properties.getProperty("MYSQL_DB_PASSWORD"));
+            toRet = dataSource.getPassword();
+            //System.out.println(toRet);
+            return toRet;
+        }
+        // end catch
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return toRet;
+    }
+
+    private String URLGet(String file){
+        String toRet = "";
+        Properties properties = new Properties();
+        FileInputStream filein = null;
+        MysqlDataSource dataSource = null;
+        FileInputStream fileuser = null;
+
+        try {
+            filein = new FileInputStream(file);
+            properties.load(filein);
+            dataSource = new MysqlDataSource();
+            // dataSource.setUser(properties.getProperty("MYSQL_DB_USERNAME"));
+            dataSource.setURL(properties.getProperty("MYSQL_DB_URL"));
+
+            toRet = dataSource.getURL();
+            //System.out.println(toRet);
+            return toRet;
+        }
+        // end catch
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return toRet;
     }
 
 }
