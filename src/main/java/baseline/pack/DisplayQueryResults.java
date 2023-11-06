@@ -17,8 +17,15 @@ public class DisplayQueryResults extends JFrame
    
    private ResultSetTableModel tableModel;
    private JTextArea queryArea;
+
+   //private JPanel panel;
+
+   private JComboBox comboDBURL, comboUser;
+
+   private JTextField userField, passField;
    
    // create ResultSetTableModel and GUI
+
    public DisplayQueryResults() 
    {   
       super( "Displaying Query Results" );
@@ -53,13 +60,55 @@ public class DisplayQueryResults extends JFrame
          box.add( scrollPane );
          box.add( submitButton );
 
-         // create JTable delegate for tableModel 
+         String s1[] = {"project3.properties", "bikedb.properties"};
+         String s2[] = {"root.properties","client1.properties","client2.properties"};
+
+         JPanel panel  = new JPanel(new GridLayout(6,2,10,10));
+
+         Label details = new Label("Connection Details");
+         panel.add(details);
+         Label empty = new Label(" test");
+         panel.add(empty);
+         panel.add(empty);
+         Label dburl = new Label ("DB URL Properties");
+         panel.add(dburl);
+         comboDBURL = new JComboBox<>(s1);
+         panel.add(comboDBURL);
+         Label userprop = new Label ("User Properties");
+         panel.add(userprop);
+         comboUser = new JComboBox<>(s2);
+         panel.add(comboUser);
+         Label username = new Label ("Username");
+         panel.add(username);
+         userField = new JTextField();
+         panel.add(userField);
+         Label password = new Label (" Password");
+         panel.add(password);
+         passField = new JTextField();
+         panel.add(passField);
+         JButton connectButton = new JButton( "Connect to Database" );
+         panel.add(connectButton);
+         panel.add(empty);
+         //box.add(panel);
+
+
+         Box panel1 = Box.createVerticalBox();
+         panel1.add(panel);
+         // need to tad this grid panel layout, and then a vertical layout, and put that all
+         //in a horizontal plane. then put the connected label and the clear / execute in hori plane
+
+
+
+
+         // create JTable delegate for tableModel
          JTable resultTable = new JTable( tableModel );
          resultTable.setGridColor(Color.BLACK);
-         
+
          // place GUI components on content pane
-         add( box, BorderLayout.NORTH );
+         //add(panel1, BorderLayout.NORTH);
+         //add( box, BorderLayout.NORTH );
          add( new JScrollPane( resultTable ), BorderLayout.CENTER );
+
 
          // create event listener for submitButton
          submitButton.addActionListener( 

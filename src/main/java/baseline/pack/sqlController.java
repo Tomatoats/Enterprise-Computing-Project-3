@@ -7,12 +7,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Properties;
 
 public class sqlController {
@@ -22,6 +24,8 @@ public class sqlController {
 
     ObservableList<String> DBURL =  FXCollections.observableArrayList("project3.properties", "bikedb.properties");
     ObservableList<String> users = FXCollections.observableArrayList("root.properties","client1.properties","client2.properties");
+
+    private JScrollPane table;
 
     @FXML
     private TextArea AreaEnterSQL;
@@ -99,6 +103,7 @@ public class sqlController {
         if (connected){
             String command =  AreaEnterSQL.getText();
             data = FXCollections.observableArrayList();
+            ArrayList<String> newData = new ArrayList<>();
             try {
 
                 MysqlDataSource dataSource = null;
@@ -111,9 +116,9 @@ public class sqlController {
                 for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
                     //We are using non property style for making dynamic table
                     final int j = i;
-                    TableColumn col = new TableColumn();
-                    col.setText(resultSet.getMetaData().getColumnName(i+1));
-
+                    //TableColumn col = new TableColumn();
+                    //col.setText(resultSet.getMetaData().getColumnName(i+1));
+                    //col.setCellValueFactory(new PropertyValueFactory(resultSet.getMetaData().getColumnTypeName(i+1)));
                     //col.setCellValueFactory(new Callback<CellDataFeatures<ObservableList, String>, ObservableValue<String>>() {
                         //public ObservableValue<String> call(TableColumn.CellDataFeatures<ObservableList, String> param) {
                             //return new SimpleStringProperty(param.getValue().get(j).toString());
@@ -131,12 +136,16 @@ public class sqlController {
                         row.add(resultSet.getString(i));
                     }
                     System.out.println("Row [1] added " + row);
+                    newData.add(row.toString());
                     data.add(row);
 
 
+
                 }
-                for (int i = 0; i < data.size();i++){
-                    System.out.println(data.get(i));
+
+                for (int i = 0; i < data.size();i++) {
+                    AreaResults.appendText( newData.get(i));
+                    AreaResults.appendText("\n");
                 }
                 //TableResults.setItems(data);
                 //int numberOfColumns = metaData.getColumnCount();
@@ -153,7 +162,9 @@ public class sqlController {
             } // end catch
         }
         else {
-            labelConnected.setText("You have to connect before executing commands");
+            //labelConnected.setText("You have to connect before executing commands");
+            //new DisplayQueryResults();
+
         }
                 //for each command make sure they have the proper permissions
 
@@ -292,6 +303,9 @@ public class sqlController {
             e.printStackTrace();
         }
         return  dataSource;
+    }
+    public void getTable (JTable resultTable){
+        //AreaResults.equals(resultTable);
     }
 
 }
