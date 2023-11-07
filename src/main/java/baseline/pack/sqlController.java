@@ -5,15 +5,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -100,66 +100,85 @@ public class sqlController {
     void ButtonExecutePressed(ActionEvent event) {
         //todo: take this and make the sql command
         //IF: Connected - COntinue on and make sure the sql command is correct
-        if (connected){
-            String command =  AreaEnterSQL.getText();
+        if (connected) {
+            String command = AreaEnterSQL.getText();
             data = FXCollections.observableArrayList();
             ArrayList<String> newData = new ArrayList<>();
-            try {
+            if (command.contains("select")) {
 
-                MysqlDataSource dataSource = null;
-                dataSource = connect();
 
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(command);
-                //ResultSetMetaData metaData = resultSet.getMetaData();
-                for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
-                    //We are using non property style for making dynamic table
-                    final int j = i;
-                    //TableColumn col = new TableColumn();
-                    //col.setText(resultSet.getMetaData().getColumnName(i+1));
-                    //col.setCellValueFactory(new PropertyValueFactory(resultSet.getMetaData().getColumnTypeName(i+1)));
-                    //col.setCellValueFactory(new Callback<CellDataFeatures<ObservableList, String>, ObservableValue<String>>() {
-                        //public ObservableValue<String> call(TableColumn.CellDataFeatures<ObservableList, String> param) {
-                            //return new SimpleStringProperty(param.getValue().get(j).toString());
-                        //}
-                    //});
-                    //TableResults.getColumns().addAll(col);
-                    System.out.println("Column [" + i + "] ");
-                }
+                try {
 
-                while (resultSet.next()) {
-                    //Iterate Row
-                    ObservableList<String> row = FXCollections.observableArrayList();
-                    for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                        //Iterate Column
-                        row.add(resultSet.getString(i));
+                    MysqlDataSource dataSource = null;
+                    dataSource = connect();
+
+                    Connection connection = dataSource.getConnection();
+                    Statement statement = connection.createStatement();
+                    ResultSet resultSet = statement.executeQuery(command);
+                    ResultSetMetaData metaData = resultSet.getMetaData();
+
+
+                    for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
+                        //We are using non property style for making dynamic table
+
+
                     }
-                    System.out.println("Row [1] added " + row);
-                    newData.add(row.toString());
-                    data.add(row);
+
+                    while (resultSet.next()) {
+                        //Iterate Row
+                        ObservableList<String> row = FXCollections.observableArrayList();
+                        for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+                            //Iterate Column
+                            row.add(resultSet.getString(i));
+                        }
+                        System.out.println("Row [1] added " + row);
+                        newData.add(row.toString());
+                        data.add(row);
 
 
+                    }
 
-                }
+                    for (int i = 0; i < data.size(); i++) {
+                        AreaResults.appendText(newData.get(i));
+                        AreaResults.appendText("\n");
+                    }
+                    //TableResults.setItems(data);
+                    //int numberOfColumns = metaData.getColumnCount();
+                    //TableResults.colum
 
-                for (int i = 0; i < data.size();i++) {
-                    AreaResults.appendText( newData.get(i));
-                    AreaResults.appendText("\n");
-                }
-                //TableResults.setItems(data);
-                //int numberOfColumns = metaData.getColumnCount();
-                //TableResults.colum
-
-                statement.close();
-                connection.close();
+                    statement.close();
+                    connection.close();
+                } catch (SQLException sqlException) {
+                    AreaResults.setText("Error: Unfamiliar command or Privlige not given");
+                    sqlException.printStackTrace();
+                    System.exit(1);
+                } // end catch
             }
-            catch ( SQLException sqlException )
-            {
-                AreaResults.setText("Error: Unfamiliar command or Privlige not given");
-                sqlException.printStackTrace();
-                System.exit( 1 );
-            } // end catch
+            else {
+                try {
+                    MysqlDataSource dataSource = null;
+                    dataSource = connect();
+
+                    Connection connection = dataSource.getConnection();
+                    Statement statement = connection.createStatement();
+                    int result =  statement.executeUpdate(command);
+                    String text = "Succesful update...";
+                    String rows = String.valueOf(result);
+                    String changed = " rows changed.";
+                    text.concat(rows);
+                    text.concat(changed);
+
+                    makeABox(text,"Successful Update");
+
+
+
+                }
+                catch (SQLException sqlException) {
+                    AreaResults.setText("Error: Unfamiliar command or Privlige not given");
+                    sqlException.printStackTrace();
+                    System.exit(1);
+                }
+            }
         }
         else {
             //labelConnected.setText("You have to connect before executing commands");
@@ -304,6 +323,26 @@ public class sqlController {
         }
         return  dataSource;
     }
+
+    private void makeABox(String temp, String title) {
+        Stage stage = new Stage();
+        VBox layout = new VBox(2);
+        Label label = new Label(temp);
+        layout.getChildren().add(label);
+        Button button = new Button();
+        button.setText("Okay");
+        button.setOnAction(value -> {
+            Stage curStage = (Stage) button.getScene().getWindow();
+            curStage.close();
+        });
+        layout.getChildren().add(button);
+        Scene scene = new Scene(layout);
+        layout.setMinSize(400, 150);
+        stage.setScene(scene);
+        stage.setTitle(title);
+        stage.show();
+    }
+
     public void getTable (JTable resultTable){
         //AreaResults.equals(resultTable);
     }
