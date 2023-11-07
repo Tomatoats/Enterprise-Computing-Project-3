@@ -1,5 +1,13 @@
 package baseline.pack;
 
+/*
+Name: Alexys Octavio Veloz
+Course: CNT 4714 Fall 2023
+Assignment title: Project 3 – A Two-tier Client-Server Application
+Date: October 29, 2023
+Class: mainApplication
+*/
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

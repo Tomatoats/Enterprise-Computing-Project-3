@@ -1,5 +1,11 @@
 package baseline.pack;
-
+/*
+Name: Alexys Octavio Veloz
+Course: CNT 4714 Fall 2023
+Assignment title: Project 3 – A Two-tier Client-Server Application
+Date: October 29, 2023
+Class: sqlController
+*/
 import com.mysql.cj.jdbc.MysqlDataSource;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -116,14 +122,16 @@ public class sqlController {
                     Statement statement = connection.createStatement();
                     ResultSet resultSet = statement.executeQuery(command);
                     ResultSetMetaData metaData = resultSet.getMetaData();
+                    int numberOfColumns = metaData.getColumnCount();
+
+                    for ( int i = 1; i <= numberOfColumns; i++ )
+                        System.out.printf( "%-20s\t", metaData.getColumnName( i ) );
+
+                    System.out.println();
 
 
-                    for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
-                        //We are using non property style for making dynamic table
 
-
-                    }
-
+                    /*
                     while (resultSet.next()) {
                         //Iterate Row
                         ObservableList<String> row = FXCollections.observableArrayList();
@@ -137,6 +145,8 @@ public class sqlController {
 
 
                     }
+                    */
+
 
                     for (int i = 0; i < data.size(); i++) {
                         AreaResults.appendText(newData.get(i));
@@ -148,6 +158,7 @@ public class sqlController {
 
                     statement.close();
                     connection.close();
+                    updateLog(fieldUsername.getText(),true);
                 } catch (SQLException sqlException) {
                     String error =  sqlException.getMessage();
                     makeABox(error, "Database Error");
@@ -164,10 +175,11 @@ public class sqlController {
                     String text = "Succesful update...";
                     String rows = String.valueOf(result);
                     String changed = " rows changed.";
-                    text.concat(rows);
-                    text.concat(changed);
+                    text = text.concat(rows);
+                    text =  text.concat(changed);
 
                     makeABox(text,"Successful Update");
+                    updateLog(fieldUsername.getText(),false);
 
 
 
@@ -222,7 +234,7 @@ public class sqlController {
         ChoiceDBURL.setItems(DBURL);
         ChoiceUser.setValue("");
         ChoiceUser.setItems(users);
-        DisplayBikes.Setup();
+        //DisplayBikes.Setup();
 
     }
 
@@ -344,6 +356,119 @@ public class sqlController {
         stage.show();
     }
 
+    public void updateLog (String user, Boolean didQuery){
+        Properties properties = new Properties();
+        FileInputStream filein = null;
+        MysqlDataSource dataSource = null;
+        FileInputStream fileuser = null;
+        try {
+            filein = new FileInputStream("in//operationslog.properties");
+            properties.load(filein);
+            dataSource = new MysqlDataSource();
+
+            dataSource.setURL(properties.getProperty("MYSQL_DB_URL"));
+            fileuser = new FileInputStream("in//project3app.properties");
+            properties.load(fileuser);
+            dataSource.setUser(properties.getProperty("MYSQL_DB_USERNAME"));
+            dataSource.setPassword(properties.getProperty("MYSQL_DB_PASSWORD"));
+
+            Connection connection = dataSource.getConnection();
+
+            // create Statement for querying database
+            Statement statement = connection.createStatement();
+            //String keys[] = new String[3];
+            //ResultSet resultSet = connection.getMetaData();
+            int rowcount = 0;
+            String querying = "select count(*) from operationscount where login_username = \"";
+            String temp = fieldUsername.getText();
+            querying =  querying.concat(temp);
+            temp = "\";";
+            querying = querying.concat(temp);
+            System.out.println(querying);
+
+            ResultSet resultSet = statement.executeQuery(querying );
+            resultSet.next();
+            rowcount = resultSet.getInt(1);
+
+            System.out.println(rowcount);
+            if (rowcount == 0){
+                String command = "insert into operationscount (login_username, num_queries, num_updates) VALUES ('";
+                command = command.concat(user);
+                command = command.concat("',");
+                if (didQuery == true){
+                    command = command.concat("1,0);");
+                    int result = statement.executeUpdate(command);
+                }
+                else {
+                    command = command.concat("0,1);");
+                    int result = statement.executeUpdate(command);
+                }
+
+            }
+            else{
+
+                querying = "select * from operationscount where login_username = \"";
+                temp = fieldUsername.getText();
+                querying =  querying.concat(temp);
+                temp = "\";";
+                querying = querying.concat(temp);
+                System.out.println(querying);
+
+                resultSet = statement.executeQuery(querying );
+                resultSet.next();
+
+                String command = "update operationscount set ";
+                 if (didQuery == true){
+                     //update and ++query
+                     int number =  resultSet.getInt("num_queries");
+
+                     number++;
+                     temp = "num_queries = ";
+                     temp = temp.concat(String.valueOf(number));
+                     command = command.concat(temp);
+                     command = command.concat(" where login_username = \"");
+                     temp = fieldUsername.getText();
+                     command = command.concat(temp);
+                     command = command.concat("\";");
+
+                     int result = statement.executeUpdate(command);
+
+                 }
+                 else {
+                     //update and ++updates
+                     int number =  resultSet.getInt("num_updates");
+                     String nameOfColumn = resultSet.getMetaData().getColumnName(1);
+                     System.out.println(nameOfColumn);
+                     System.out.println("number = "+number);
+                     number++;
+                     System.out.println("number now equals "+number);
+                     temp = "num_updates = ";
+                     temp = temp.concat(String.valueOf(number));
+                     command = command.concat(temp);
+                     command = command.concat(" where login_username = \"");
+                     temp = fieldUsername.getText();
+                     command = command.concat(temp);
+                     command = command.concat("\";");
+
+                     System.out.println(command);
+
+                     int result = statement.executeUpdate(command);
+                 }
+
+            }
+            //check
+            //int result = statement.executeUpdate("");
+            statement.close();
+            connection.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
     public void getTable (JTable resultTable){
         //AreaResults.equals(resultTable);
     }
