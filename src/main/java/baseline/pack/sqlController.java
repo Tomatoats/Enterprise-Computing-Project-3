@@ -149,9 +149,8 @@ public class sqlController {
                     statement.close();
                     connection.close();
                 } catch (SQLException sqlException) {
-                    AreaResults.setText("Error: Unfamiliar command or Privlige not given");
-                    sqlException.printStackTrace();
-                    System.exit(1);
+                    String error =  sqlException.getMessage();
+                    makeABox(error, "Database Error");
                 } // end catch
             }
             else {
@@ -174,9 +173,11 @@ public class sqlController {
 
                 }
                 catch (SQLException sqlException) {
-                    AreaResults.setText("Error: Unfamiliar command or Privlige not given");
-                    sqlException.printStackTrace();
-                    System.exit(1);
+                    //AreaResults.setText("Error: Unfamiliar command or Privlige not given");
+                    String error =  sqlException.getMessage();
+                    makeABox(error, "Database Error");
+                    //sqlException.printStackTrace();
+                    //System.exit(1);
                 }
             }
         }
@@ -209,7 +210,7 @@ public class sqlController {
         }
         else {
             flag = false;
-            labelConnected.setText("Invalid user / pass combo");
+            labelConnected.setText("NOT CONNECTED - User Credentials Do Not Match Properties File!");
 
         }
         return flag;
