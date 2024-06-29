@@ -1,4 +1,4 @@
-# SQLConnect by Alexys Veloz!
+# SQLConnect by Alexys Octavio Veloz!
 
 ## This is a two-tier Client-Server Java-Based Application interacting with MySQL databases using JDBC for connectivity!
 
