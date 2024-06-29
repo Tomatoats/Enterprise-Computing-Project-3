@@ -20,7 +20,7 @@ public class mainApplication extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(mainApplication.class.getResource("sqlComplete.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Hello!");
+        stage.setTitle("SQLConnect");
         stage.setScene(scene);
         //sqlController.Setup();
         stage.show();

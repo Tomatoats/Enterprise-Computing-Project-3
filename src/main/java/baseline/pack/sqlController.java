@@ -131,7 +131,7 @@ public class sqlController {
 
 
 
-                    /*
+
                     while (resultSet.next()) {
                         //Iterate Row
                         ObservableList<String> row = FXCollections.observableArrayList();
@@ -145,7 +145,7 @@ public class sqlController {
 
 
                     }
-                    */
+
 
 
                     for (int i = 0; i < data.size(); i++) {
