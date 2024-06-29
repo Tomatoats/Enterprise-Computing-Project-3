@@ -1,8 +1,15 @@
-# SQLConnect by Alexys Octavio Veloz!
+# SQLConnect 
+This is a two-tier Client-Server Java-Based Application interacting with MySQL databases using JDBC for connectivity!
 
-## This is a two-tier Client-Server Java-Based Application interacting with MySQL databases using JDBC for connectivity!
+This application uses Java to create a front-end GUI (Client Side) application to connect to MySQL servers.
 
-### This application uses Java to create a front-end GUI (Client Side) application to connect to MySQL servers.
+## Authors
+Alexys Octavio Veloz
+
+## Acknowledgements
+This was a project for my Enterprise Computing Class in UCF that turned out to be a success.
+
+##
 
 Hello and Welcome to SQLConnect! This uses JDBC to connect to MySQL Servers, which you can use to enter SQL functions and see the results.
 
